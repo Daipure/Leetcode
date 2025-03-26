@@ -1,0 +1,42 @@
+二分搜尋法與插入位置
+簡要回答
+在二分搜尋法結束後返回 left 的原因是因為當目標值不在陣列中時，left 恰好指向目標值應該被插入的位置。這個性質使得 left 成為 searchInsert 函數的理想返回值。
+延伸回答
+當二分搜尋結束且沒有找到目標值時，會有以下幾種情況：
+
+如果目標值小於所有元素，則 left = 0
+如果目標值大於所有元素，則 left = nums.size()
+如果目標值應該在陣列中間的某個位置，則 left 指向第一個大於目標值的元素
+
+這些情況下，left 都指向了目標值應該插入的正確位置。這是因為二分搜尋法的特性：
+
+當 target < nums[middle] 時，我們移動 right = middle - 1，表示目標在左半部
+當 target > nums[middle] 時，我們移動 left = middle + 1，表示目標在右半部
+當搜尋結束時，left > right，且 left 指向第一個大於或等於目標值的位置
+
+''' cpp
+class Solution {
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        // 二分搜尋法
+        // 找到回傳index 找不到回傳適合插入的位置
+        
+        int left = 0;
+        int right = nums.size()-1;
+        int middle = 0;
+
+        while(left <= right ){
+            middle = (left + right)/2;
+            cout<<middle<<endl;
+            if(target < nums[middle] ){
+                right = middle-1;
+            }
+            else if(target > nums[middle]){
+                left = middle+1;
+            }
+            else return middle;
+        }
+        return left;
+    }
+};
+'''
