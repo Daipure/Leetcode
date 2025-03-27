@@ -1,0 +1,72 @@
+矩陣切割最小差值問題
+簡要回答
+此程式計算二維矩陣的橫向或是縱向切割方式，使得切割後的兩部分合的差值最小。使用前綴合來計算部分的合，避免重複計算。
+延伸回答
+程式主要分為四個部分：
+
+輸入與總和計算：讀取n×m矩陣並計算總和sum
+列和計算：計算每一列的元素和(ho陣列)
+行和計算：計算每一行的元素和(ver陣列)
+計算最小差值：
+
+橫切：逐行累加，計算上下兩部分差值
+縱切：逐列累加，計算左右兩部分差值
+
+
+
+關鍵公式：abs(sum - partialSum - partialSum) 計算兩部分差值，其中partialSum為一部分的和。
+``` cpp
+#include<iostream>
+#include<vector>
+using namespace std;
+
+
+int main(){
+    int n,m,sum=0;
+
+    // 藉由前綴陣列來計算值
+    vector<vector<int>>vec(n,vector<int>(m,0));
+
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            cin>>vec[i][j];
+            sum+=vec[i][j];
+        }
+    }
+    // 列和
+    vector<int>ho(n,0);
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            ho[i]+=vec[i][j];
+        }
+    }
+    // 行和
+    vector<int>ver(m,0);
+    for(int j=0;j<m;j++){
+        for(int i=0;i<n;i++){
+            ver[j]+=vec[i][j];
+        }
+    }
+
+    int result = INT_MAX;
+    // 計算橫切
+
+    int hosum = 0;
+    for(int i=0;i<n;i++){
+        hosum += ho[i];
+        int hocut = abs(sum - hosum -hosum);
+        result = min(result,hocut);
+    }
+    // 計算縱切
+    
+    int versum = 0;
+    for(int j=0;j<m;j++){
+        
+        versum += ver[j];
+        int vercut = abs(sum - versum -versum);
+        result = min(result,vercut);
+    }
+    cout<<result<<endl;
+
+}
+```
