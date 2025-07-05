@@ -1,0 +1,63 @@
+
+---
+
+# 組合總和 III (Combination Sum III)
+
+## 簡要回答
+
+* 題目要求找出所有由 1\~9 中不重複的 k 個數字組成、且總和為 n 的組合。
+* 需使用 **回溯法 (Backtracking)** 進行組合枚舉與剪枝。
+* 特別注意：每個數字只能使用一次，組合順序不重要。
+
+## 延伸回答
+
+### 解題思路
+
+* 使用回溯法遍歷所有可能組合，維護目前的組合（`path`）、總和（`sum`）、以及從哪個數字開始選（`start`）。
+* 當組合長度等於 `k` 時，檢查總和是否為 `n`，是則加入結果。
+* 每次選擇一個數字 i 時，下一層遞迴需從 `i+1` 開始，避免重複與順序顛倒。
+
+### 常見錯誤
+
+* 遞迴時起始值錯設為 `start + 1`，應為 `i + 1`
+* 可能產生錯誤組合或遺漏正確解
+
+### 時間與空間複雜度
+
+* 時間複雜度：最壞為 O(C(9, k))，因為是從 1\~9 中選 k 個數的組合
+* 空間複雜度：O(k) 為遞迴深度與 `path` 的空間
+
+## 程式碼
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> result;
+    vector<int> path;
+
+    vector<vector<int>> combinationSum3(int k, int n) {
+        backtracking(k, n, 0, 1);
+        return result;
+    }
+
+    void backtracking(int k, int n, int sum, int start) {
+        if (path.size() == k) {
+            if (sum == n) {
+                result.push_back(path);
+            }
+            return;
+        }
+
+        for (int i = start; i <= 9; i++) {
+            // 剪枝：若 sum + i 已超過 n，就沒必要繼續
+            if (sum + i > n) break;
+
+            sum += i;
+            path.push_back(i);
+            backtracking(k, n, sum, i + 1);  // **修正此處的 start 為 i + 1**
+            path.pop_back();
+            sum -= i;
+        }
+    }
+};
+```
