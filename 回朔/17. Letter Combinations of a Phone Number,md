@@ -1,0 +1,65 @@
+---
+
+# 電話號碼的字母組合 (Letter Combinations of a Phone Number)
+
+## 簡要回答
+
+* 題目給定一組數字字串（由 2–9 組成），要找出其對應按鍵字母可能組成的所有字串組合。
+* 採用 **回溯法 (Backtracking)** 枚舉所有可能的字母排列。
+* 每個數字對應一組字母（模擬電話按鍵映射）。
+
+## 延伸回答
+
+### 解題思路
+
+* 將電話按鍵映射儲存在 `map` 陣列中，例如 `map[2] = "abc"`。
+* 從第 0 個數字開始，每次選擇一個對應字母進入路徑，往下一層遞迴。
+* 當字串長度與原始 `digits` 長度相同時，加入 `result`。
+* 最終得到所有可能組合。
+
+### 關鍵技巧
+
+* 使用 `digits[index] - '0'` 將字元轉為對應數字索引。
+* 在進入回溯前先處理空輸入情況，避免產生空結果。
+* 回溯框架類似多層 for 迴圈的展開，這題樹的**深度**為 `digits.length()`，每層的**寬度**取決於該數字對應的字母數量。
+
+### 時間與空間複雜度
+
+* 時間複雜度：O(3ⁿ～4ⁿ)，其中 n 為 `digits` 長度，因為每個數字最多對應 4 種字母。
+* 空間複雜度：O(n)，為遞迴深度及 `path` 所使用空間。
+
+## 程式碼
+
+```cpp
+class Solution {
+public:
+    vector<string> map = {"", "", "abc", "def", "ghi", "jkl", 
+                          "mno", "pqrs", "tuv", "wxyz"};
+    vector<string> result;
+    string path;
+
+    vector<string> letterCombinations(string digits) {
+        if (digits.size() == 0) return {};
+        backtracking(digits, 0);
+        return result;
+    }
+
+    void backtracking(string digits, int index) {
+        // 終止條件：長度符合就加入結果
+        if (path.size() == digits.size()) {
+            result.push_back(path);
+            return;
+        }
+
+        // 當前數字對應的字母集
+        string cur = map[digits[index] - '0'];
+        for (int i = 0; i < cur.size(); i++) {
+            path.push_back(cur[i]);
+            backtracking(digits, index + 1);
+            path.pop_back();  // 回溯
+        }
+    }
+};
+```
+
+
