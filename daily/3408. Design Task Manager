@@ -1,0 +1,84 @@
+使用set排序
+
+```cpp
+
+
+struct CustomCompare {
+    // operator() 告訴 set 如何比較兩個 pair
+    // 回傳 true 表示 a 應該排在 b 前面
+    bool operator()(const pair<int, int>& a, const pair<int, int>& b) const {
+        // a: {priority_a, taskId_a}
+        // b: {priority_b, taskId_b}
+
+        // 如果 priority 不相等，priority 高的排前面
+        if (a.first != b.first) {
+            return a.first > b.first;
+        }
+        // 如果 priority 相等，taskId 大的排前面
+        return a.second > b.second;
+    }
+};
+
+class TaskManager {
+public:
+    unordered_map<int, pair<int, int>> task_info;
+    // 2. 告訴 set 使用我們自訂的比較規則
+    set<pair<int, int>, CustomCompare> task_ratings;
+
+    TaskManager(vector<vector<int>>& tasks) {
+        for (const auto& task : tasks) {
+            int userId = task[0];
+            int taskId = task[1];
+            int priority = task[2];
+            task_info[taskId] = {userId, priority};
+            // 3. 不再需要負號，直接存入 {priority, taskId}
+            task_ratings.insert({priority, taskId});
+        }
+    }
+    
+    void add(int userId, int taskId, int priority) {
+        if (task_info.count(taskId)) {
+            rmv(taskId);
+        }
+        task_info[taskId] = {userId, priority};
+        task_ratings.insert({priority, taskId});
+    }
+    
+    void edit(int taskId, int newPriority) {
+        // 加上安全檢查，避免對不存在的 taskId 操作
+        if (task_info.find(taskId) == task_info.end()) return;
+
+        pair<int, int>& info = task_info.at(taskId);
+        int old_priority = info.second;
+        
+        task_ratings.erase({old_priority, taskId});
+
+        info.second = newPriority;
+        task_ratings.insert({newPriority, taskId});
+    }
+    
+    void rmv(int taskId) {
+        // 加上安全檢查
+        if (task_info.find(taskId) == task_info.end()) return;
+        
+        int priority = task_info.at(taskId).second;
+        task_info.erase(taskId);
+        task_ratings.erase({priority, taskId});
+    }
+    
+    int execTop() {
+        if (task_ratings.empty()) {
+            return -1;
+        }
+        
+        // 現在 begin() 就會是 priority 最高、taskId 也最高的任務
+        int taskId = task_ratings.begin()->second;
+        
+        int userId = task_info.at(taskId).first;
+        
+        rmv(taskId);
+        
+        return userId;
+    }
+};
+```
